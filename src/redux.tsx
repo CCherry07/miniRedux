@@ -1,4 +1,4 @@
-import React, { memo, useContext, useEffect, useState } from "react"
+import React, { forwardRef, memo, useContext, useEffect, useState } from "react"
 
 const isObjectEqual = (obj1: any, obj2: any): boolean => {
   let o1 = obj1 instanceof Object;
@@ -83,23 +83,24 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
 }
 
 
-function connect(Component: (props: any) => JSX.Element) {
+const connect = (selector?: Function) => (Component: (props: any) => JSX.Element) => {
   const MemoComponent = memo(Component)
-  const Wrapper = () => {
+  const Wrapper = forwardRef((props, ref) => {
     const store = useContext(Context) as Store<unknown>
     const [, update] = useState({})
-    const state = store.getState() as any
+    const state = store.getState()
+    const data = selector ? selector(state) : { state }
     useEffect(() => {
       const unsubscribe = store.subscribe((newState) => {
-        if (!isObjectEqual(state, newState)) {
-          console.log(state, newState);
+        const newData = selector ? selector(newState) : { state: newState }
+        if (!isObjectEqual(data, newData)) {
           update({})
         }
       })
       return unsubscribe
     }, [])
-    return (<MemoComponent {...store} state={state} ></MemoComponent>)
-  }
+    return (<MemoComponent {...props} {...store} {...data} ref={ref}></MemoComponent>)
+  })
   return Wrapper
 }
 

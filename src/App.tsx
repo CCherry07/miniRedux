@@ -21,17 +21,17 @@ export const App = () => {
     <Three></Three>
   </Provider>
 }
-const One = memo(connect(() => {
+const One = memo(connect()(() => {
   console.log('One执行了')
   return <section>One </section>
 }))
-const Two = connect(({ state }) => {
+const Two = connect()(({ state }) => {
   console.log('Two执行了')
   return <section>Two
     <div>name:{state.user.name}</div>
   </section>
 })
-const Three = connect(() => {
+const Three = connect()(() => {
   console.log('Three执行了')
   return <section>Three
     <div>
@@ -54,7 +54,7 @@ const User = (({ user }: State) => {
 // const fetchUser = (dispatch) => {
 //   return ajax('/user').then(response => dispatch({ type: 'updateUser', payload: response.data }))
 // }
-const UserModifier = connect(({ state, dispatch }: { state: State, dispatch: any }) => {
+const UserModifier = connect((state: { user: any; }) => ({ user: state.user }))(({ user, dispatch }: { user: any, dispatch: any }) => {
   console.log('UserModifier执行了')
   const handleChange = (e: any) => {
     dispatch({
@@ -67,7 +67,7 @@ const UserModifier = connect(({ state, dispatch }: { state: State, dispatch: any
   }
   return (
     <div>
-      <div>User: {state.user.name} </div>
+      <div>User: {user.name} </div>
       <input type="text" onChange={handleChange} />
       {/* <button onClick={onClick} > 异步获取 user </button> */}
     </div>
