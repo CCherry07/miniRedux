@@ -1,7 +1,12 @@
 import React from "react"
-import { Provider, createStore } from './redux';
+import { Provider, createStore, connect } from './redux';
 const reducer = (state: State, action: any) => {
-
+  switch (action.type) {
+    case 'update':
+      return { ...state, ...action.payload }
+    default:
+      break;
+  }
   return state
 }
 const store = createStore(reducer, { user: { name: "cherry" }, group: "前端" })
@@ -10,20 +15,31 @@ interface State {
   group: string,
 }
 export const App = () => {
-  return <div>
+  return <Provider store={store}>
     <One></One>
     <Two></Two>
     <Three></Three>
-  </div>
+  </Provider>
 }
-const One = () => {
+const One = connect(({ dispatch }) => {
   console.log('大儿子执行了')
+  setTimeout(() => {
+    dispatch({
+      type: "update", payload: {
+        user: { name: "kd" }
+      }
+    })
+  }, 1000)
   return <section>大儿子 </section>
-}
-const Two = () => {
+})
+const Two = connect(({ getState }) => {
   console.log('二儿子执行了')
-  return <section>二儿子</section>
-}
+  const state = getState()
+  console.log(state);
+  return <section>二儿子
+    <div>name:{state.user.name}</div>
+  </section>
+})
 const Three = () => {
   console.log('幺儿子执行了')
   return <section>幺儿子

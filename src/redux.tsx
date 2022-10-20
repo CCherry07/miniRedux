@@ -1,6 +1,6 @@
-import React from "react"
+import React, { memo, useContext, useEffect, useState } from "react"
 
-const Context = React.createContext<any>({})
+const Context = React.createContext<unknown>(null)
 interface Action<S> {
   type: String | Symbol
   payload: S
@@ -11,7 +11,7 @@ interface Store<S> {
   subscribe: (listener: () => void) => () => void
 }
 interface Provider<S> {
-  children: React.ReactElement
+  children: React.ReactElement | React.ReactElement[]
   store: Store<S>
 }
 const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initState: S) => {
@@ -57,6 +57,20 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
   }
   return store
 }
+
+function connect(Component: (props: any) => JSX.Element) {
+  const MemoComponent = memo(Component)
+  const Wrapper = () => {
+    const store = useContext(Context) as Store<unknown>
+    // const [, update] = useState({})
+    // useEffect(() => {
+
+    // })
+    return (<MemoComponent {...store}></MemoComponent>)
+  }
+  return Wrapper
+}
+
 function Provider({ children, store }: Provider<unknown>) {
   return (<Context.Provider value={store}>
     {children}
@@ -65,5 +79,6 @@ function Provider({ children, store }: Provider<unknown>) {
 
 export {
   Provider,
-  createStore
+  createStore,
+  connect
 }
