@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 import { Provider, createStore, connect } from './redux';
 const reducer = (state: State, action: any) => {
   switch (action.type) {
@@ -21,31 +21,24 @@ export const App = () => {
     <Three></Three>
   </Provider>
 }
-const One = connect(({ dispatch }) => {
+const One = memo(connect(() => {
   console.log('One执行了')
-  setTimeout(() => {
-    dispatch({
-      type: "update", payload: {
-        user: { name: "kd" }
-      }
-    })
-  }, 1000)
   return <section>One </section>
-})
-const Two = connect(({ getState }) => {
+}))
+const Two = connect(({ state }) => {
   console.log('Two执行了')
-  const state = getState()
-  console.log(state);
   return <section>Two
     <div>name:{state.user.name}</div>
   </section>
 })
-const Three = () => {
+const Three = connect(() => {
   console.log('Three执行了')
   return <section>Three
-    <div></div>
+    <div>
+      <UserModifier />
+    </div>
   </section>
-}
+})
 
 
 const User = (({ user }: State) => {
@@ -61,13 +54,23 @@ const User = (({ user }: State) => {
 // const fetchUser = (dispatch) => {
 //   return ajax('/user').then(response => dispatch({ type: 'updateUser', payload: response.data }))
 // }
-const UserModifier = ({ state }: { state: State }) => {
+const UserModifier = connect(({ state, dispatch }: { state: State, dispatch: any }) => {
   console.log('UserModifier执行了')
+  const handleChange = (e: any) => {
+    dispatch({
+      type: 'update', payload: {
+        user: {
+          name: e.target.value
+        }
+      }
+    })
+  }
   return (
     <div>
       <div>User: {state.user.name} </div>
+      <input type="text" onChange={handleChange} />
       {/* <button onClick={onClick} > 异步获取 user </button> */}
     </div>
   )
-}
+})
 

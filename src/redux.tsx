@@ -1,6 +1,32 @@
 import React, { memo, useContext, useEffect, useState } from "react"
 
+const isObjectEqual = (obj1: any, obj2: any): boolean => {
+  let o1 = obj1 instanceof Object;
+  let o2 = obj2 instanceof Object;
+  if (!o1 || !o2) {
+    return obj1 === obj2
+  }
+  if (Object.keys(obj1).length !== Object.keys(obj2).length) {
+    return false;
+  }
+  for (let attr in obj1) {
+    let a1 = Object.prototype.toString.call(obj1[attr]) == '[object Object]'
+    let a2 = Object.prototype.toString.call(obj2[attr]) == '[object Object]'
+    let arr1 = Object.prototype.toString.call(obj1[attr]) == '[object Array]'
+    if (a1 && a2) {
+      return isObjectEqual(obj1[attr], obj2[attr])
+    } else if (arr1) {
+      if (obj1[attr].toString() != obj2[attr].toString()) {
+        return false;
+      }
+    } else if (obj1[attr] !== obj2[attr]) {
+      return false
+    }
+  }
+  return true
+}
 const Context = React.createContext<unknown>(null)
+
 interface Action<S> {
   type: String | Symbol
   payload: S
@@ -8,7 +34,7 @@ interface Action<S> {
 interface Store<S> {
   getState: () => S
   dispatch: (action: Action<unknown>) => void
-  subscribe: (listener: () => void) => () => void
+  subscribe: (listener: (state: S) => void) => () => void
 }
 interface Provider<S> {
   children: React.ReactElement | React.ReactElement[]
@@ -17,15 +43,16 @@ interface Provider<S> {
 const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initState: S) => {
   let currentReducer = reducer
   let currentState = initState
-  let currentListeners: (() => void)[] | null = []
+  let currentListeners: ((state: S) => void)[] | null = []
   let nextListeners = currentListeners
   function getState() {
     return currentState
   }
   function dispatch(action: A) {
     currentState = currentReducer(currentState, action)
+    observer(currentState)
   }
-  function subscribe(listener: () => void) {
+  function subscribe(listener: (state: S) => void) {
     if (nextListeners === currentListeners) {
       nextListeners = currentListeners?.slice()
     }
@@ -43,24 +70,35 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
     nextReducer: React.Reducer<S, A>) {
     reducer = nextReducer as any
   }
+  function observer(state: S) {
+    nextListeners.map(fn => fn(state))
+  }
   const store = {
     getState,
     dispatch,
     subscribe,
-    replaceReducer
+    replaceReducer,
   }
   return store
 }
+
 
 function connect(Component: (props: any) => JSX.Element) {
   const MemoComponent = memo(Component)
   const Wrapper = () => {
     const store = useContext(Context) as Store<unknown>
-    // const [, update] = useState({})
-    // useEffect(() => {
-
-    // })
-    return (<MemoComponent {...store}></MemoComponent>)
+    const [, update] = useState({})
+    const state = store.getState() as any
+    useEffect(() => {
+      const unsubscribe = store.subscribe((newState) => {
+        if (!isObjectEqual(state, newState)) {
+          console.log(state, newState);
+          update({})
+        }
+      })
+      return unsubscribe
+    }, [])
+    return (<MemoComponent {...store} state={state} ></MemoComponent>)
   }
   return Wrapper
 }
