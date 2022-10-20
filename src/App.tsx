@@ -1,10 +1,13 @@
 import React from "react"
-import { ajax } from "./network"
+import { Provider, createStore } from './redux';
+const reducer = (state: State, action: any) => {
 
-const Context = React.createContext<any>({})
+  return state
+}
+const store = createStore(reducer, { user: { name: "cherry" }, group: "前端" })
 interface State {
   user: Record<string, any>,
-  group: Record<string, any>,
+  group: string,
 }
 export const App = () => {
   return <div>
