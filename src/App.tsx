@@ -22,7 +22,7 @@ export const App = () => {
   </Provider>
 }
 const One = connect(({ dispatch }) => {
-  console.log('大儿子执行了')
+  console.log('One执行了')
   setTimeout(() => {
     dispatch({
       type: "update", payload: {
@@ -30,19 +30,19 @@ const One = connect(({ dispatch }) => {
       }
     })
   }, 1000)
-  return <section>大儿子 </section>
+  return <section>One </section>
 })
 const Two = connect(({ getState }) => {
-  console.log('二儿子执行了')
+  console.log('Two执行了')
   const state = getState()
   console.log(state);
-  return <section>二儿子
+  return <section>Two
     <div>name:{state.user.name}</div>
   </section>
 })
 const Three = () => {
-  console.log('幺儿子执行了')
-  return <section>幺儿子
+  console.log('Three执行了')
+  return <section>Three
     <div></div>
   </section>
 }

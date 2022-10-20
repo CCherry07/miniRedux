@@ -19,17 +19,11 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
   let currentState = initState
   let currentListeners: (() => void)[] | null = []
   let nextListeners = currentListeners
-  let isDispatching = false
   function getState() {
     return currentState
   }
   function dispatch(action: A) {
-    try {
-      isDispatching = true
-      currentState = currentReducer(currentState, action)
-    } finally {
-      isDispatching = false
-    }
+    currentState = currentReducer(currentState, action)
   }
   function subscribe(listener: () => void) {
     if (nextListeners === currentListeners) {
