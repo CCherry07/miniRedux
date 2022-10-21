@@ -1,8 +1,7 @@
 import React, { memo } from "react"
 import { userConnector } from "./store/user/connector";
-import { Provider, connect } from './redux';
+import { Provider } from './redux';
 import { store } from "./store/user/userStore";
-import type { State } from "./store/user/userStore";
 
 export const App = () => {
   return <Provider store={store}>
