@@ -1,7 +1,8 @@
 import React, { memo } from "react"
 import { userConnector } from "./store/user/connector";
-import { Provider } from './redux';
+import { Provider, connect } from './redux';
 import { store } from "./store/user/userStore";
+import { ajax } from "./network";
 
 export const App = () => {
   return <Provider store={store}>
@@ -42,14 +43,13 @@ const User = userConnector(({ user }) => {
 // const fetchUserPromise = () => {
 //   return ajax('/user').then(response => response.data)
 // }
-// const fetchUser = (dispatch) => {
-//   return ajax('/user').then(response => dispatch({ type: 'updateUser', payload: response.data }))
-// }
-
-
-const UserModifier = userConnector(({ user, updateUser }: { user: any, updateUser: any }) => {
+const fetchUser = (dispatch) => {
+  return ajax('/user').then(response => dispatch({ type: 'update', payload: response.data }))
+}
+const UserModifier = connect(null, null)(({ user, dispatch }: { user: any, updateUser: any }) => {
   const handleChange = (e: any) => {
-    updateUser({ name: e.target.value })
+    // updateUser(() => ({ name: e.target.value }))
+    dispatch(fetchUser)
   }
   return (
     <div>

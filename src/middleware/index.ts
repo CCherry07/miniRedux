@@ -1,14 +1,14 @@
 const dispatchWithFunction = (store: any) => (dispatch: any) => (action: any) => {
   let _dispatch = dispatch
-  function handDispatch(action: (arg0: void) => void) {
+  dispatch = (action: (arg0: void) => void) => {
     if (action instanceof Function) {
-      action(handDispatch(action))
+      action(dispatch)
     } else {
       _dispatch(action)
     }
   }
-  handDispatch(action)
-  return store
+  dispatch(action)
+  return dispatch
 }
 
 export const middlewares = [dispatchWithFunction]
