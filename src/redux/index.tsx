@@ -9,7 +9,7 @@ interface Action<S> {
 }
 interface Store<S> {
   getState: () => S
-  dispatch: (action: Action<unknown>) => void
+  dispatch: (action: Action<S>) => void
   subscribe: (listener: (state: S) => void) => () => void
 }
 interface Provider<S> {
@@ -56,7 +56,15 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
     subscribe,
     replaceReducer,
   }
-  return store
+  // TODO create store type
+  function applyMiddleware(store: any, middlewares: Function[] = []) {
+    middlewares = middlewares.slice()
+    middlewares.reverse()
+    let dispatch = store.dispatch
+    middlewares.forEach(middleware => (dispatch = middleware(store)(dispatch)))
+    return Object.assign({}, store, { dispatch })
+  }
+  return applyMiddleware(store, middlewares)
 }
 
 
@@ -83,7 +91,7 @@ const connect = (mapStateToProps?: Function, mapDispatchToProps?: Function) => (
   return Wrapper
 }
 
-function Provider({ children, store }: Provider<unknown>) {
+function Provider<S>({ children, store }: Provider<S>) {
   return (<Context.Provider value={store}>
     {children}
   </Context.Provider>)
