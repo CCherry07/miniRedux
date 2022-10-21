@@ -40,16 +40,19 @@ const User = userConnector(({ user }) => {
 
 
 
-// const fetchUserPromise = () => {
-//   return ajax('/user').then(response => response.data)
-// }
-const fetchUser = (dispatch) => {
-  return ajax('/user').then(response => dispatch({ type: 'update', payload: response.data }))
+const fetchUserPromise = () => {
+  return ajax('/user').then(response => response.data)
 }
+// const fetchUser = (dispatch) => {
+//   return ajax('/user').then(response => dispatch({ type: 'update', payload: response.data }))
+// }
 const UserModifier = connect(null, null)(({ user, dispatch }: { user: any, updateUser: any }) => {
   const handleChange = (e: any) => {
     // updateUser(() => ({ name: e.target.value }))
-    dispatch(fetchUser)
+    dispatch({
+      type: "update",
+      payload: fetchUserPromise()
+    })
   }
   return (
     <div>
