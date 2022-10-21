@@ -21,7 +21,7 @@ export const App = () => {
     <Three></Three>
   </Provider>
 }
-const One = memo(connect()(() => {
+const One = memo(connect((state: any) => (state.group))(() => {
   console.log('One执行了')
   return <section>One </section>
 }))
@@ -54,16 +54,23 @@ const User = (({ user }: State) => {
 // const fetchUser = (dispatch) => {
 //   return ajax('/user').then(response => dispatch({ type: 'updateUser', payload: response.data }))
 // }
-const UserModifier = connect((state: { user: any; }) => ({ user: state.user }))(({ user, dispatch }: { user: any, dispatch: any }) => {
-  console.log('UserModifier执行了')
-  const handleChange = (e: any) => {
-    dispatch({
-      type: 'update', payload: {
-        user: {
-          name: e.target.value
+
+function mapDispatchToProps(dispatch: any) {
+  return {
+    updateUser: (payload: Extract<"user", State>) => {
+      dispatch({
+        type: 'update', payload: {
+          user: payload
         }
-      }
-    })
+      })
+    }
+  }
+}
+const selector = (state: { user: any; }) => ({ user: state.user })
+
+const UserModifier = connect(selector, mapDispatchToProps)(({ user, updateUser }: { user: any, updateUser: any }) => {
+  const handleChange = (e: any) => {
+    updateUser({ name: e.target.value })
   }
   return (
     <div>

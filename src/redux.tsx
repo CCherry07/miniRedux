@@ -83,23 +83,25 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
 }
 
 
-const connect = (selector?: Function) => (Component: (props: any) => JSX.Element) => {
+const connect = (mapStateToProps?: Function, mapDispatchToProps?: Function) => (Component: (props: any) => JSX.Element) => {
   const MemoComponent = memo(Component)
   const Wrapper = forwardRef((props, ref) => {
     const store = useContext(Context) as Store<unknown>
     const [, update] = useState({})
     const state = store.getState()
-    const data = selector ? selector(state) : { state }
+    const data = mapStateToProps ? mapStateToProps(state) : { state }
+    const dispatchToProps = mapDispatchToProps ? mapDispatchToProps(store.dispatch) : { dispatch: store.dispatch }
     useEffect(() => {
       const unsubscribe = store.subscribe((newState) => {
-        const newData = selector ? selector(newState) : { state: newState }
+        const newData = mapStateToProps ? mapStateToProps(newState) : { state: newState }
         if (!isObjectEqual(data, newData)) {
           update({})
         }
       })
       return unsubscribe
-    }, [])
-    return (<MemoComponent {...props} {...store} {...data} ref={ref}></MemoComponent>)
+    }, [mapStateToProps])
+    const mapProps = { ...data, ...dispatchToProps }
+    return (<MemoComponent {...props} {...store} {...mapProps} ref={ref}></MemoComponent>)
   })
   return Wrapper
 }
