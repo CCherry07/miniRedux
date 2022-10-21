@@ -1,5 +1,5 @@
 import React, { forwardRef, memo, useContext, useEffect, useState } from "react"
-import { isObjectEqual } from "./utils"
+import { isObjectEqual } from "../utils"
 
 const Context = React.createContext<unknown>(null)
 
