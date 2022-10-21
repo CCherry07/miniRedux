@@ -46,7 +46,7 @@ const fetchUserPromise = () => {
 // const fetchUser = (dispatch) => {
 //   return ajax('/user').then(response => dispatch({ type: 'update', payload: response.data }))
 // }
-const UserModifier = connect(null, null)(({ user, dispatch }: { user: any, updateUser: any }) => {
+const UserModifier = connect(undefined, undefined)(({ user, dispatch }: { user: any, dispatch: any }) => {
   const handleChange = (e: any) => {
     // updateUser(() => ({ name: e.target.value }))
     dispatch({
