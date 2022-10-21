@@ -13,7 +13,9 @@ export const App = () => {
 }
 const One = memo(() => {
   console.log('One执行了')
-  return <section>One </section>
+  return <section>One
+    <User></User>
+  </section>
 })
 const Two = userConnector(({ user }) => {
   console.log('Two执行了');
@@ -21,18 +23,18 @@ const Two = userConnector(({ user }) => {
     <div>name:{user.name}</div>
   </section>
 })
-const Three = connect()(() => {
+const Three = () => {
   console.log('Three执行了')
   return <section>Three
     <div>
       <UserModifier />
     </div>
   </section>
-})
+}
 
 
-const User = (({ user }: State) => {
-  console.log('User执行了 ' + Math.random())
+const User = userConnector(({ user }) => {
+  console.log('User执行了')
   return <div>User: {user.name} </div>
 })
 
@@ -52,7 +54,6 @@ const UserModifier = userConnector(({ user, updateUser }: { user: any, updateUse
   }
   return (
     <div>
-      <div>User: {user.name} </div>
       <input type="text" onChange={handleChange} />
       {/* <button onClick={onClick} > 异步获取 user </button> */}
     </div>
