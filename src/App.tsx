@@ -1,8 +1,8 @@
 import React, { memo } from "react"
-import { userConnector } from "./connector";
+import { userConnector } from "./store/user/connector";
 import { Provider, connect } from './redux';
-import { store } from "./userStore";
-import type { State } from "./userStore";
+import { store } from "./store/user/userStore";
+import type { State } from "./store/user/userStore";
 
 export const App = () => {
   return <Provider store={store}>
@@ -16,6 +16,7 @@ const One = memo(() => {
   return <section>One </section>
 })
 const Two = userConnector(({ user }) => {
+  console.log('Two执行了');
   return <section>Two
     <div>name:{user.name}</div>
   </section>

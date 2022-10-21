@@ -1,4 +1,4 @@
-import { createStore } from "./redux";
+import { createStore } from "../../redux";
 import { reducer } from "./userReducer";
 export interface State {
   user: Record<string, any>,

@@ -1,4 +1,4 @@
-import { connect } from "./redux";
+import { connect } from "../../redux";
 import { State } from "./userStore";
 
 function userDispatchs(dispatch: any) {
