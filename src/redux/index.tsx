@@ -16,7 +16,7 @@ interface Provider<S> {
   children: React.ReactElement | React.ReactElement[]
   store: Store<S>
 }
-const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initState: S) => {
+const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initState: S, middlewares?: Function[]) => {
   let currentReducer = reducer
   let currentState = initState
   let currentListeners: ((state: S) => void)[] | null = []
@@ -49,6 +49,7 @@ const createStore = <S, A extends Action<S>>(reducer: React.Reducer<S, A>, initS
   function observer(state: S) {
     nextListeners.map(fn => fn(state))
   }
+
   const store = {
     getState,
     dispatch,
